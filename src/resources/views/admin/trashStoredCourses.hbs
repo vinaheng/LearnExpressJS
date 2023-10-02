@@ -1,0 +1,147 @@
+{{>header}}
+<div class="container mt-4">
+    <form action="/admin/select_restor" method="POST">
+        <h1 class="text-center">KHÓA HỌC ĐÃ XÓA</h1>
+        <div class="container-table">
+
+            <div class="container_btn mb-2">
+                <div class="d-flex">
+                    <select name="action" style="width: 200px;" class="form-select form-select-sm"
+                        aria-label=".form-select-sm example" required>
+                        <option value="">--Hành Động---</option>
+                        <option value="Restor">Restor</option>
+                        <option value="Delete">Delete</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary ms-2 disabled btn_submit">Thực hiện</button>
+                </div>
+                <div class="container_btn_">
+                    <a class="btn btn-success" href="/admin/stored/1"><i class="bi bi-arrow-clockwise"></i></a>
+                </div>
+            </div>
+            <table class="table table-hover">
+                <thead>
+                    <tr class="align-middle">
+                        <th scope="col">
+                            <div class="form-check">
+                                <input class="form-check-input checked_all" type="checkbox" id="flexCheckDefault" />
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    Chọn tất
+                                </label>
+                            </div>
+                        </th>
+                        <th scope="col">Tên Khóa học</th>
+                        <th scope="col">Thời gian tạo</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each courses}}
+                    <tr>
+                        <th class="align-middle" scope="row">
+                            <div class="form-check">
+                                <input name="itemids[]" class="form-check-input" type="checkbox" value="{{this._id}}"
+                                    id="CheckDefault_{{sum @index 1}}" />
+                                <label class="form-check-label" for="CheckDefault_{{sum @index 1}}">
+                                    {{sum @index 1}}
+                                </label>
+                            </div>
+                        </th>
+                        <td class="align-middle">{{this.title}}</td>
+                        <td class="align-middle">{{this.createdAt}}</td>
+                        <td class="align-middle">
+                            <a class="btn btn-success btn-restor" data-id="{{this._id}}"><i
+                                    class="bi bi-arrow-clockwise"></i></a>
+                            <a class="btn btn-danger" data-bs-toggle="modal" data-id="{{this._id}}"
+                                data-bs-target="#deleteModal"><i class="bi bi-trash-fill"></i></a>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+
+    </form>
+    <!-- Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Xóa khóa học ?</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Bạn cần xóa khóa học này không ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-bs-dismiss="modal" class="btn btn-danger btn-delete">Xóa </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{! form delete }}
+    <form method="post" name="delete-form"></form>
+    <form method="post" name="restor-form"></form>
+</div>
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var idCourse
+        const deleteForm = document.forms['delete-form']
+        const restorForm = document.forms['restor-form']
+        var deleteModal = document.getElementById('deleteModal')
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget
+            idCourse = button.getAttribute('data-id')
+        })
+        document.querySelector('.btn-delete').onclick = function () {
+            deleteForm.action = `/admin/${idCourse}/forceDestroy?_method=DELETE`;
+            deleteForm.submit()
+        }
+
+        var restoreButtons = document.querySelectorAll('.btn-restor');
+        restoreButtons.forEach(function (button) {
+            button.onclick = function (event) {
+                event.preventDefault(); // Prevent the default behavior of the anchor element (if it's an anchor)
+                var idRestor = button.getAttribute('data-id');
+                restorForm.action = '/admin/' + idRestor + '/restor?_method=PATCH'
+                restorForm.submit()
+            }
+        });
+
+        const itemIds = document.querySelectorAll('input[name="itemids[]"]')
+        const btnCheckAll = document.querySelector('.checked_all')
+        const btnSubmit = document.querySelector('.btn_submit')
+        btnCheckAll.addEventListener('click', function () {
+            itemIds.forEach(function (item) {
+                item.checked = btnCheckAll.checked
+            })
+            renderBtnSubmit()
+        })
+        itemIds.forEach(function (item) {
+            item.addEventListener('change', function () {
+                renderBtnSubmit()
+                const checkChecked = itemIds.length === document.querySelectorAll('input[name="itemids[]"]:checked').length
+                if (checkChecked) {
+                    btnCheckAll.checked = true
+                } else {
+                    btnCheckAll.checked = false
+                }
+            })
+
+        })
+        //render btn submit
+
+        function renderBtnSubmit() {
+            var numCheck = document.querySelectorAll('input[name="itemids[]"]:checked').length
+            if (numCheck > 0) {
+                btnSubmit.classList.remove('disabled')
+            } else {
+                btnSubmit.classList.add('disabled')
+            }
+        }
+    })
+
+
+
+</script>

@@ -1,0 +1,24 @@
+h1 {
+    font-weight: bold;
+}
+
+.header {
+    background: #F8F9FA;
+}
+body{
+    background:#EAEEF7
+}
+.container_btn{
+    display: flex;
+    justify-content: space-between;
+}
+.container-table{
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    border-top: 3px solid rgb(77, 76, 76);
+}
+.container_table_footer{
+    display: flex;
+    justify-content: space-between;
+}

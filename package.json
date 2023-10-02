@@ -1,0 +1,42 @@
+{
+  "name": "learnexpressjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --inspect src/index.js",
+    "watch": "node-sass --watch src/resources/scss/ --output src/public/css/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vinaheng/learnExpressJS.git"
+  },
+  "keywords": [
+    "nodejs",
+    "Express",
+    "LearnExpressJS"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vinaheng/learnExpressJS/issues"
+  },
+  "homepage": "https://github.com/vinaheng/learnExpressJS#readme",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-handlebars": "^5.1.0",
+    "git": "^0.1.5",
+    "method-override": "^3.0.0",
+    "mongodb": "^6.1.0",
+    "mongoose": "^7.5.2",
+    "mongoose-delete": "^1.0.1",
+    "mongoosejs-soft-delete": "^1.0.2",
+    "node-sass": "^9.0.0",
+    "nodemon": "^3.0.1"
+  },
+  "devDependencies": {
+    "morgan": "^1.10.0"
+  }
+}

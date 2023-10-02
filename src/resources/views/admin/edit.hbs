@@ -1,0 +1,25 @@
+{{>header}}
+<div class="container mt-4">
+    <h2>Cập nhất khóa học !</h2>
+    {{!-- _methode=PUT --}}
+    <form action="/admin/{{course._id}}?_method=PUT" method="post">
+        <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Title</label>
+            <input value="{{course.title}}" name="title" type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
+
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Description</label>
+            <textarea   name="dsc"  class="form-control">{{course.dsc}}</textarea>
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Themnal img link</label>
+            <input  value="{{course.img}}" name="img" type="text" class="form-control" id="exampleInputPassword1" />
+        </div>
+         <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Link id video</label>
+            <input  value="{{course.idVideo}}" name="idVideo" type="text" class="form-control" id="exampleInputPassword1" />
+        </div>
+        <button type="submit" class="btn btn-primary">Lưu lại</button>
+    </form>
+</div>

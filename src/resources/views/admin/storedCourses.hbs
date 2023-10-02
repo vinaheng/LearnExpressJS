@@ -1,0 +1,183 @@
+{{>header}}
+<div class="container mt-4">
+    <form action="/admin/checked_all_for_delete" method="POST">
+        <h1 class="text-center">KHÓA HỌC CỦA TÔI</h1>
+        <div class="container-table">
+            <div class="container_btn mb-2">
+                <div class="d-flex">
+                    <select name="action" style="width: 150px;" class="form-select form-select-sm"
+                        aria-label=".form-select-sm example" required>
+                        <option value="">--Hành Động---</option>
+                        <option value="Delete">Delete</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary ms-2 disabled btn_submit_selectall">Thực hiện</button>
+                </div>
+                <div class="container_btn_">
+                    <a href="/admin/create" type="button" class="btn btn-primary">Thêm Mới</a>
+                    <a href="/admin/trash" type="button" class="btn btn-danger"><i class="bi bi-trash-fill"></i>
+                        ({{countDelete}})</a>
+                </div>
+            </div>
+
+            <table class="table table-hover">
+                <thead class="align-middle">
+                    <tr>
+                        <th scope="col">
+                            <div class="form-check mt-2">
+                                <input class="form-check-input checked_all" type="checkbox" value=""
+                                    id="flexCheckDefault" />
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    Chọn tất
+                                </label>
+                            </div>
+                        </th>
+                        <th scope="col">Tên Khóa học</th>
+                        <th scope="col">Thời gian tao</th>
+                        <th scope="col">Kích hoạt</th>
+                        <th scope="col">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each courses}}
+                    <h1>{{this.count}}</h1>
+                    <tr>
+                        <th class="align-middle" scope="row">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="courseId[]" value="{{this._id}}"
+                                    id="CheckDefault_{{sum @index 1}}" />
+                                <label class="form-check-label" for="CheckDefault_{{sum @index 1}}">
+                                    {{sum @index 1}}
+                                </label>
+                            </div>
+                        </th>
+                        <td class="align-middle">{{this.title}}</td>
+                        <td class="align-middle">{{formatDate this.createdAt}}</td>
+                        <td class="align-middle">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input check_switch switch-{{this._id}}" value="{{this._id}}"
+                                    type="checkbox" role="switch" id="flexSwitchCheckDefault" {{#if this.active}}
+                                    checked {{/if}}>
+
+                            </div>
+                        </td>
+                        <td class="align-middle">
+                
+                            <a href="/admin/{{this._id}}/edit" class="btn btn-success"><i class="bi bi-pencil-square"></i></a>
+                            <a class="btn btn-danger" data-bs-toggle="modal" data-id="{{this._id}}?page={{../pageActive}}&item={{../countItems}}"
+                                data-bs-target="#deleteModal"><i class="bi bi-x-square"></i></a>
+                        </td>
+                    </tr>
+                    {{else}}
+                    <tr class="text-center">
+                        <td colspan="5"> Bạn chưa đăng khóa học nào <a href="/admin/create">Thêm khóa học mới</a></td>
+                    </tr>
+                    {{/each}}
+
+                </tbody>
+
+            </table>
+
+            <div class="container_table_footer">
+                <span>
+                    Hiển thị {{startItems}} đến {{endItems}} trên {{countPages}} mục
+                </span>
+                <ul class="pagination pagination-sm mb-0">
+                    {{!--  --}}
+                    <li class="page-item"><a class="page-link {{#if (eq pageActive 1)}}disabled{{/if}}" href="/admin/stored/{{sub pageActive 1}}">Previous</a></li>
+                    {{!-- Loop Item 1,2,3... --}}
+                    {{#each pages}}
+                    <li class="page-item {{#if (eq ../pageActive this.id)}}active{{/if}}"><a class="page-link" href="/admin/stored/{{this.id}}">{{this.id}}</a></li>
+                    {{/each}}
+                    {{!-- --}}
+                    <li class="page-item"><a class="page-link {{#if (eq pageActive countPages)}}disabled{{/if}}" href="/admin/stored/{{sum pageActive 1}}">Next</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+    </form>
+    <!-- Modal -->
+
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Xóa khóa học ?</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Bạn cần xóa khóa học này không ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-bs-dismiss="modal" class="btn btn-danger btn-delete">Xóa bỏ</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{! form delete }}
+    <form method="post" name="delete-form"></form>
+    <form method="post" name="active-form"></form>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var idCourse
+        const deleteForm = document.forms['delete-form']
+        var deleteModal = document.getElementById('deleteModal')
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget
+            idCourse = button.getAttribute('data-id')
+        })
+        document.querySelector('.btn-delete').onclick = function () {
+            deleteForm.action = `/admin/destory/${idCourse}&_method=DELETE`;
+            deleteForm.submit()
+        }
+
+        const checkAll = document.querySelector('.checked_all');
+        const checkItems = document.querySelectorAll('input[name="courseId[]"]')
+        checkAll.addEventListener('click', function () {
+            checkItems.forEach(function (item) {
+                item.checked = checkAll.checked
+            })
+            renderCheckedAllSubmitBtn()
+        })
+
+        checkItems.forEach(function (checkItem) {
+            checkItem.addEventListener('change', function () {
+                renderCheckedAllSubmitBtn()
+                const checkedAll = checkItems.length == document.querySelectorAll('input[name="courseId[]"]:checked').length
+                if (checkedAll) {
+                    checkAll.checked = true
+                } else {
+                    checkAll.checked = false
+                }
+            });
+        });
+        // Re-render check all submit button
+        const btnSubmit = document.querySelector('.btn_submit_selectall')
+        function renderCheckedAllSubmitBtn() {
+            var numCheck = document.querySelectorAll('input[name="courseId[]"]:checked').length
+
+            if (numCheck > 0) {
+                btnSubmit.classList.remove('disabled')
+            } else {
+                btnSubmit.classList.add('disabled')
+            }
+        }
+        btnSubmit.onclick = function () {
+
+        }
+        //Update active show or hide
+        const formActive = document.forms['active-form']
+        const checkSwitch = document.querySelectorAll('.check_switch')
+        checkSwitch.forEach(function (item) {
+            item.addEventListener('change', function (e) {
+                formActive.action = `/admin/${e.target.value}/activeUpdate?_method=PATCH&active=${item.checked}`
+                formActive.submit()
+            })
+        })
+    })
+
+
+
+</script>
